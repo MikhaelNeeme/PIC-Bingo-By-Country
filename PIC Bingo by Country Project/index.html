@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,6 @@
     <style>
         /* 🎨 THEME CONFIGURATION */
         :root {
-            /* Palette provided in prompt */
             --primary-blue: #0032A0;
             --dark-navy: #002855;
             --bright-cyan: #00A9E0;
@@ -32,11 +31,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Prevents scrollbars during animation */
+            overflow: hidden;
             position: relative;
         }
 
-        /* 🌍 BACKGROUND ELEMENTS (Atmosphere) */
+        /* 🌍 BACKGROUND ELEMENTS */
         .globe-bg {
             position: absolute;
             width: 80vw;
@@ -107,7 +106,7 @@
             position: relative;
             margin-bottom: 3rem;
             transition: transform 0.2s;
-            overflow: visible; /* Allows dog to overlap */
+            overflow: visible;
         }
 
         .country-text {
@@ -119,7 +118,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Phase 1: Default State */
+            line-height: 1.1;
         }
 
         .country-text.scrambling {
@@ -132,35 +131,30 @@
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 🐶 CARTOON DOG CONTAINER (IMPORTANT) */
-        /* This is the container that moves the dog. 
-           The IMG inside moves with it. */
+        /* 🐶 CARTOON DOG CONTAINER */
         #dog-stage {
             position: absolute;
-            /* Initial Position: Hidden below the board */
             bottom: -50px; 
             right: -80px;
-            width: 200px; /* Base width of the dog area */
+            width: 200px;
             height: 200px;
             z-index: 20;
             pointer-events: none;
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(100%) rotate(10deg); /* Hidden state */
+            transform: translateY(100%) rotate(10deg);
             opacity: 0;
         }
 
-        /* The actual image styling */
         #cartoonDog {
             width: 100%;
             height: auto;
             display: block;
-            /* Optional: Add a subtle bounce */
             animation: dogIdle 3s infinite ease-in-out;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); 
         }
 
-        /* Class added via JS to make dog appear */
         #dog-stage.active {
-            transform: translateY(-20%) rotate(-10deg); /* Final Position */
+            transform: translateY(-20%) rotate(-10deg);
             opacity: 1;
         }
 
@@ -211,19 +205,16 @@
             pointer-events: none;
         }
 
-        /* ANIMATIONS */
         @keyframes popIn {
             0% { transform: scale(0.5); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* RESPONSIVE TWEAKS */
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             .country-text { font-size: 2rem; }
             #dog-stage { width: 150px; right: -20px; bottom: -40px; }
         }
-
     </style>
 </head>
 <body>
@@ -239,25 +230,36 @@
             <div class="country-text" id="result-text">READY?</div>
             
             <div id="dog-stage">
-                <img id="cartoonDog" src="https://placehold.co/200x200/png?text=Dog+PNG" alt="cartoon dog">
+                <img id="cartoonDog" src="" alt="Winner Dog!">
             </div>
-            </div>
+        </div>
 
         <button class="spin-btn" id="spinBtn">Pick a Country</button>
     </div>
 
     <script>
         // 🌎 COUNTRY DATA 
-        // Edit this list to change your bingo options
         const countries = [
             "SAN JOSE, COSTA RICA", "TOKYO, JAPAN", "CAPE COAST, GHANA", 
-            "BERLIN, GERMANY", "LISBON,PORTUGAL", "DUBLIN, IRELAND",
-            "CHILLÁN, CHILE ", "NAIROBI, KENYA", "GOLD COAST, AUSTRALIA",
+            "BERLIN, GERMANY", "LISBON, PORTUGAL", "DUBLIN, IRELAND",
+            "CHILLÁN, CHILE", "NAIROBI, KENYA", "GOLD COAST, AUSTRALIA",
             "ROME, ITALY", "SEOUL, SOUTH KOREA", "TAIPEI, TAIWAN",
-            "KRAKÓW, POLAND ", "PUEBLA,MEXICO ", "ANGERS, FRANCE", 
-            "OLSO, NORWAY", "BANGKOK, THAILAND", "ZURICH, SWITZERLAND",
-            "PRAGUE, CZECHIA", "ROME,ITALY", "DA NANG, VIETNAM",
+            "KRAKÓW, POLAND", "PUEBLA, MEXICO", "ANGERS, FRANCE", 
+            "OSLO, NORWAY", "BANGKOK, THAILAND", "ZURICH, SWITZERLAND",
+            "PRAGUE, CZECHIA", "DA NANG, VIETNAM",
             "CAPE TOWN, SOUTH AFRICA"
+        ];
+
+        // 🐶 DOG IMAGES
+        // Double check your file names inside the 'WanderImages' folder!
+        const dogImages = [
+            "WanderImages/W1.png",
+            "WanderImages/W2.png",
+            "WanderImages/W3.png",
+            "WanderImages/W4.png",
+            "WanderImages/W5.png",
+            "WanderImages/W6.png",
+            "WanderImages/W7.png"
         ];
 
         // ⚙️ SETUP
@@ -265,13 +267,10 @@
         const spinBtn = document.getElementById('spinBtn');
         const dogStage = document.getElementById('dog-stage');
         const board = document.getElementById('board');
+        const cartoonDog = document.getElementById('cartoonDog');
         
         let availableCountries = [...countries];
         let isAnimating = false;
-
-        // 🔊 SOUND EFFECT HOOK (Optional)
-        // const sfxSpin = new Audio('spin.mp3');
-        // const sfxWin = new Audio('win.mp3');
 
         // 🎬 MAIN LOGIC
         spinBtn.addEventListener('click', () => {
@@ -280,42 +279,34 @@
         });
 
         function startRound() {
-            // 1. Reset State
             if (availableCountries.length === 0) {
-                // Optional: Reset list if empty
                 availableCountries = [...countries]; 
-                alert("All countries picked! Resuffling...");
+                alert("All countries picked! Reshuffling...");
             }
 
             isAnimating = true;
             spinBtn.disabled = true;
             spinBtn.innerText = "Searching...";
             
-            // Hide dog if he's visible from previous turn
             dogStage.classList.remove('active');
             resultText.classList.remove('winner');
             resultText.classList.add('scrambling');
 
-            // 2. Select Winner Logic (True Random)
+            // Select Winner
             const randomIndex = Math.floor(Math.random() * availableCountries.length);
             const winner = availableCountries[randomIndex];
-            
-            // Remove winner from pool to prevent repeats
             availableCountries.splice(randomIndex, 1);
 
-            // 3. Phase 2: Randomization Animation (The Shuffle)
+            // Animation Loop
             let iterations = 0;
-            const maxIterations = 25; // How many shuffles before stopping
-            const speed = 100; // Speed in ms
+            const maxIterations = 25; 
+            const speed = 100; 
 
             const interval = setInterval(() => {
-                // Show random temp countries while waiting
                 const tempIndex = Math.floor(Math.random() * countries.length);
                 resultText.innerText = countries[tempIndex];
-                
                 iterations++;
 
-                // 4. Phase 3: Selection Moment
                 if (iterations >= maxIterations) {
                     clearInterval(interval);
                     finalizeRound(winner);
@@ -324,21 +315,20 @@
         }
 
         function finalizeRound(winner) {
-            // Display Winner
             resultText.innerText = winner;
             resultText.classList.remove('scrambling');
             resultText.classList.add('winner');
 
-            // 5. Phase 4: Dog Interaction
-            // Slight delay so the text locks in, then dog jumps in
-            setTimeout(() => {
-                dogStage.classList.add('active'); // Triggers CSS slide-in
-                createConfetti();
-                
-                // Optional: Play Sound
-                // sfxWin.play();
+            // ⭐ PICK RANDOM DOG IMAGE
+            // If you still see a broken image, the file names in your folder
+            // do not match the list above (W1.png, W2.png, etc).
+            const randomDog = dogImages[Math.floor(Math.random() * dogImages.length)];
+            cartoonDog.src = randomDog;
 
-                // Reset Button
+            setTimeout(() => {
+                dogStage.classList.add('active');
+                createConfetti();
+
                 spinBtn.disabled = false;
                 spinBtn.innerText = "Pick Another";
                 isAnimating = false;
@@ -353,7 +343,6 @@
                 const conf = document.createElement('div');
                 conf.classList.add('confetti');
                 
-                // Random position start near the text
                 const startX = window.innerWidth / 2;
                 const startY = window.innerHeight / 2;
                 
@@ -363,7 +352,6 @@
                 
                 document.body.appendChild(conf);
 
-                // Animate
                 const destX = (Math.random() - 0.5) * 500;
                 const destY = (Math.random() - 0.5) * 500;
                 const rotation = Math.random() * 360;
