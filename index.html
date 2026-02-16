@@ -131,36 +131,42 @@
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 🐶 CARTOON DOG CONTAINER */
-        #dog-stage {
-            position: absolute;
-            bottom: -50px; 
-            right: -80px;
-            width: 200px;
-            height: 200px;
+        /* 🐶 STATIC DOG IMAGES */
+        .screen-dog {
+            position: fixed;
             z-index: 20;
             pointer-events: none;
-            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(100%) rotate(10deg);
-            opacity: 0;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
-        #cartoonDog {
-            width: 100%;
-            height: auto;
-            display: block;
-            animation: dogIdle 3s infinite ease-in-out;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); 
+        .dog-w2 {
+            top: 10px;
+            right: 10px;
+            width: 70px;
         }
 
-        #dog-stage.active {
-            transform: translateY(-20%) rotate(-10deg);
-            opacity: 1;
+        .dog-w3 {
+            bottom: -10px;
+            left: -10px;
+            width: 160px;
         }
 
-        @keyframes dogIdle {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+        .board-dog {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 110px;
+            z-index: 5;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        }
+
+        .dog-w6 {
+            left: -70px;
+        }
+
+        .dog-w1 {
+            right: -70px;
         }
 
         /* 🎲 BUTTON STYLING */
@@ -182,17 +188,17 @@
             position: relative;
             overflow: hidden;
         }
+        
         .bottom-logo {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            height: 60px;   /* adjust size if needed */
+            height: 90px; /* Made a little bit larger (was 60px) */
             z-index: 100;
             pointer-events: none;
             opacity: 0.95;
-}
-
+        }
 
         .spin-btn:active {
             transform: translateY(6px);
@@ -224,12 +230,18 @@
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; }
             .country-text { font-size: 2rem; }
-            #dog-stage { width: 150px; right: -20px; bottom: -40px; }
+            .dog-w6 { left: -40px; width: 70px; }
+            .dog-w1 { right: -40px; width: 70px; }
+            .dog-w3 { width: 120px; }
         }
     </style>
 </head>
-<img src="PIC_marktop_white.png" class="bottom-logo" alt="PIC Logo">
 <body>
+
+    <img src="PIC_marktop_white.png" class="bottom-logo" alt="PIC Logo">
+    
+    <img src="WanderImages/W2.png" class="screen-dog dog-w2" alt="W2 Dog">
+    <img src="WanderImages/W3.png" class="screen-dog dog-w3" alt="W3 Dog">
 
     <div class="globe-bg"></div>
     <div class="cloud c1"></div>
@@ -239,11 +251,10 @@
         <h1>World Country Bingo</h1>
 
         <div class="display-board" id="board">
-            <div class="country-text" id="result-text">READY?</div>
+            <img src="WanderImages/W6.png" class="board-dog dog-w6" alt="W6 Dog">
+            <img src="WanderImages/W1.png" class="board-dog dog-w1" alt="W1 Dog">
             
-            <div id="dog-stage">
-                <img id="cartoonDog" src="" alt="Winner Dog!">
-            </div>
+            <div class="country-text" id="result-text">READY?</div>
         </div>
 
         <button class="spin-btn" id="spinBtn">Pick a Country</button>
@@ -262,24 +273,10 @@
             "CAPE TOWN, SOUTH AFRICA"
         ];
 
-        // 🐶 DOG IMAGES
-        // Double check your file names inside the 'WanderImages' folder!
-        const dogImages = [
-            "WanderImages/W1.png",
-            "WanderImages/W2.png",
-            "WanderImages/W3.png",
-            "WanderImages/W4.png",
-            "WanderImages/W5.png",
-            "WanderImages/W6.png",
-            "WanderImages/W7.png"
-        ];
-
         // ⚙️ SETUP
         const resultText = document.getElementById('result-text');
         const spinBtn = document.getElementById('spinBtn');
-        const dogStage = document.getElementById('dog-stage');
         const board = document.getElementById('board');
-        const cartoonDog = document.getElementById('cartoonDog');
         
         let availableCountries = [...countries];
         let isAnimating = false;
@@ -300,7 +297,6 @@
             spinBtn.disabled = true;
             spinBtn.innerText = "Searching...";
             
-            dogStage.classList.remove('active');
             resultText.classList.remove('winner');
             resultText.classList.add('scrambling');
 
@@ -326,21 +322,12 @@
             }, speed);
         }
 
-
-
         function finalizeRound(winner) {
             resultText.innerText = winner;
             resultText.classList.remove('scrambling');
             resultText.classList.add('winner');
 
-            // ⭐ PICK RANDOM DOG IMAGE
-            // If you still see a broken image, the file names in your folder
-            // do not match the list above (W1.png, W2.png, etc).
-            const randomDog = dogImages[Math.floor(Math.random() * dogImages.length)];
-            cartoonDog.src = randomDog;
-
             setTimeout(() => {
-                dogStage.classList.add('active');
                 createConfetti();
 
                 spinBtn.disabled = false;
@@ -385,8 +372,3 @@
     </script>
 </body>
 </html>
-</html>
-
-
-
-
